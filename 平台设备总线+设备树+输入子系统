@@ -1,0 +1,19 @@
+1） 注册输入子系统  --  int input_register_device(struct input_dev *dev)
+	1. 需要用  struct input_dev *input_allocate_device(void)  生成结构体
+	2. 给结构体赋值，evbit和keybit需要用  void set_bit(int nr, volatile void * addr)
+
+2） 创建平台设备总线-驱动端结构体  --  platform_driver_register(struct platform_driver * drv);
+	->name必须赋值
+	->mydrv.driver.of_match_table 要创建一个const struct of_device_id *of_match_table;重新指向
+	->产生myprobe（驱动端和设备树匹配后的回调函数）、myremove
+
+3）在myprobe中
+	1. 获取按键的gpio编号
+	2. 申请gpio
+	3. 获取中断号
+	3. 注册中断并使能  --  request_irq
+		->中断服务函数
+4）在中断服务函数中
+	1. 获取按键引脚值
+	2. 判断并上报给输入子系统
+	3. 上报完成后上报同步
